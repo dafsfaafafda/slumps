@@ -1,22 +1,19 @@
+
 name: Build docker images
 on:
   push:
       branches:
         - master
-      # file paths to consider in the event. Optional; defaults to all.
       paths:
         - 'crow/**'
      
-
 jobs:
   build-crow-dockerrmi:
     name: Build docker stack for CROW
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2 # checkout latest version of the repo
-        #with:
-        #  submodules: recursive
+        uses: actions/checkout@v2
       - name: Install dependencies
         run: |
           sudo apt-get update && docker --version
@@ -31,10 +28,9 @@ jobs:
           user: ${{secrets.DOCKER_USER}}
           pass: ${{secrets.DOCKER_PASS}}
 
-      - name: Push images CROW
+      - name: Push images CROW standalone
         run: |
           docker login -u="$user" -p="$pass" && docker push slumps/crow2:standalone
         env:
           user: ${{secrets.DOCKER_USER}}
           pass: ${{secrets.DOCKER_PASS}}
-     

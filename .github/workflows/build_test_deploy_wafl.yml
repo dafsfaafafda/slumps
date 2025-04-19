@@ -1,3 +1,4 @@
+
 name: Build, test and deploy WAFL
 on:
   push:
@@ -28,12 +29,6 @@ jobs:
           java-package: jdk # (jre, jdk, or jdk+fx) - defaults to jdk
           #architecture: x64 # (x64 or x86) - defaults to x64
 
-      # - name: Build SWAM
-      #   run: |
-      #     cd wasm-fuzzer/fuzzing-server-swam
-      #     ./millw cli.assembly
-      #     ./millw cli_server.assembly
-
       - name: Download SWAM
         run: |
           cd wasm-fuzzer/fuzzing-server-swam
@@ -55,6 +50,12 @@ jobs:
           tree ${PWD}/wasm-fuzzer/wafl-temp
           cd wasm-fuzzer
           bash test_wafl_local.sh ${PWD}/sample-testing-targets/branches2.wasm a 11
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: wafl-artifacts
+          path: wasm-fuzzer/wafl-temp
 
   docker:
     runs-on: ubuntu-latest
@@ -100,6 +101,7 @@ jobs:
           sleep 3m
 
       - name: Push images
+        if: github.repository == 'dafsfaafafda/M2' || contains(github.ref, 'global')
         run: |
           docker tag wafl slumps/wafl:latest
           docker login -u="$user" -p="$pass"
